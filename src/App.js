@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
-import { Route, useHistory } from 'react-router-dom';
+import { Route, useHistory, Link } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
+import { InputText } from "primereact/inputtext";
 
 import { AppTopbar } from './AppTopbar';
 import { AppFooter } from './AppFooter';
@@ -55,6 +56,12 @@ import './layout/flags/flags.css';
 import './layout/layout.scss';
 import './App.scss';
 
+import Login from './Login'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+import './App.css';
+import marine from './assets/images/marine.png'
+
 const App = () => {
 
     const [layoutMode, setLayoutMode] = useState('static');
@@ -62,6 +69,11 @@ const App = () => {
     const [inputStyle, setInputStyle] = useState('outlined');
     const [ripple, setRipple] = useState(false);
     const [sidebarActive, setSidebarActive] = useState(true);
+    const [login, setLogin] = useState(false);
+    const [loginVisible, setLoginVisible] = useState(true)
+    const [resetPasswordVisible, setResetPasswordVisible] = useState(false)
+    const [registerVisible, setRegisterVisible] = useState(false)
+    const [floatValue, setFloatValue] = useState('')
     const sidebar = useRef();
 
     const history = useHistory();
@@ -228,6 +240,32 @@ const App = () => {
     const isSidebarVisible = () => {
         return sidebarActive;
     };
+    
+    const checkVisible = () => {
+        if(loginVisible) {
+            setLoginVisible(false)
+            setResetPasswordVisible(true)
+        } else {
+            setLoginVisible(true)
+            setResetPasswordVisible(false)
+        }
+    }
+
+    const checkRegisterVisible = () => {
+        if(loginVisible) {
+            setLoginVisible(false)
+            setResetPasswordVisible(false)
+            setRegisterVisible(true)
+        } else {
+            setLoginVisible(true)
+            setResetPasswordVisible(false)
+            setRegisterVisible(false)
+        }
+    }
+
+    const checkLogin = () => {
+        setLogin(true);
+    }
 
     const logo = layoutColorMode === 'dark' ? 'assets/layout/images/logo-white.svg' : 'assets/layout/images/logo.svg';
 
@@ -245,10 +283,11 @@ const App = () => {
     });
 
     return (
+        login ? (
         <div className={wrapperClass} onClick={onWrapperClick}>
             <AppTopbar onToggleMenu={onToggleMenu} />
 
-            <CSSTransition classNames="layout-sidebar" timeout={{ enter: 200, exit: 200 }} in={isSidebarVisible()} unmountOnExit>
+            <CSSTransition classNames="layout-sidebar" timeout={{ enter: 2000, exit: 2000 }} in={isSidebarVisible()} unmountOnExit>
                 <div ref={sidebar} className={sidebarClassName} onClick={onSidebarClick}>
                     <div className="layout-logo" style={{cursor: 'pointer'}} onClick={() => history.push('/')}>
                         <img alt="Logo" src={logo} />
@@ -258,8 +297,8 @@ const App = () => {
                 </div>
             </CSSTransition>
 
-            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+            {/* <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
+                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} /> */}
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
@@ -296,6 +335,117 @@ const App = () => {
             <AppFooter />
 
         </div>
+        
+        )
+        : (
+            // <Login />
+
+            <div className="maincontainer">
+                <div className="container-fluid">
+                <div className="row no-gutter">
+                    
+                    <div className="col-md-6 bg-light">
+                    <div className="login d-flex align-items-center py-5">
+                        
+                        <div className="container">
+                        <div className="row">
+                            <div style={{padding: 0, textAlign: 'center'}}>
+                                <img src={marine} width={200} height={200} />
+                            </div>
+                            {loginVisible && (
+                            <div className="col-lg-10 col-xl-7 mx-auto">
+                                <h2 className="text-center display-4">Welcome!</h2>
+                                <p className="text-center text-muted mb-4" style={{marginBottom: 100}}>For those who are already registered, please login</p>
+                                <form>
+                                    <div className="mb-3">
+                                        <input id="inputEmail" type="email" placeholder="Email address" required="" autoFocus="" className="form-control border-0 shadow-sm px-4" />
+                                    </div>
+                                    <div className="mb-3">
+                                        <input id="inputPassword" type="password" placeholder="Password" required="" className="form-control border-0 shadow-sm px-4" />
+                                    </div>
+                                    <div className="d-flex justify-content-between form-check" style={{marginBottom: 20, marginTop: 20}}>
+                                        <div>
+                                            <input id="customCheck1" type="checkbox" className="form-check-input" />
+                                            <label htmlFor="customCheck1" className="form-check-label">Remember password</label>
+                                        </div>
+                                        <div>
+                                            <button onClick={checkVisible} id="button">
+                                                <i>Forgot <span style={{color: 'blue'}}>password</span>?</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="d-grid gap-2 mt-2">
+                                        <button onClick={checkLogin} className="btn btn-success btn-block text-uppercase mb-2 shadow-sm">Sign in</button>
+                                    </div>
+                                    
+                                    <div className="text-center d-flex justify-content-center mt-4">
+                                        Don't have an account? 
+                                        <button onClick={checkRegisterVisible} id="button" style={{color: 'blue'}}>
+                                            <u>Sign Up</u>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            )}
+
+                            {resetPasswordVisible && (
+                            <div className="text-center col-lg-10 col-xl-7 mx-auto">
+                                <h2 className="display-4">Reset Password</h2>
+                                <p className="text-muted mb-4">Enter the email address associated with your account and we'll send you a link to reset your password</p>
+                                <form>
+                                    <div className="mb-3">
+                                        <input id="inputEmail" type="email" placeholder="Email address" required="" autoFocus="" className="form-control border-0 shadow-sm px-4" />
+                                    </div>
+                                    <div className="d-grid gap-2 mt-2">
+                                        <button className="btn btn-primary btn-block text-uppercase mb-2 shadow-sm">Reset Password</button>
+                                    </div>
+                                    
+                                    <div className="text-center d-flex justify-content-center mt-4">
+                                        <button onClick={checkVisible} id="button">
+                                            <u>Try to <span style={{color: 'blue'}}>Login</span></u>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            )}
+
+                            {registerVisible && (
+                                <div className="text-center col-lg-10 col-xl-7 mx-auto">
+                                    <h2 className="display-4">Register</h2>
+                                    <p className="text-muted mb-4">Create your account. It's free and only takes a minute</p>
+                                    <form>
+                                        <div className="mb-3">
+                                            <input id="firstName" type="firtsName" placeholder="Firts name" required="" autoFocus="" className="form-control border-0 shadow-sm px-4" />
+                                        </div>
+                                        <div className="mb-3">
+                                            <input id="lastName" type="lastName" placeholder="Last name" required="" autoFocus="" className="form-control border-0 shadow-sm px-4" />
+                                        </div>
+                                        <div className="mb-3">
+                                            <input id="inputEmail" type="email" placeholder="Email address" required="" autoFocus="" className="form-control border-0 shadow-sm px-4" />
+                                        </div>
+                                        <div className="mb-3">
+                                            <input id="password" type="password" placeholder="Password" required="" autoFocus="" className="form-control border-0 shadow-sm px-4" />
+                                        </div>
+                                        <div className="mb-3">
+                                            <input id="re-password" type="password" placeholder="Re-password" required="" autoFocus="" className="form-control border-0 shadow-sm px-4" />
+                                        </div>
+                                        <div className="d-grid gap-2 mt-2">
+                                            <button onClick={checkRegisterVisible} className="btn btn-primary btn-block text-uppercase mb-2 shadow-sm">Register</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+                        </div>
+                        </div>
+
+                    </div>
+                    </div>
+                    
+                    <div className="col-md-6 d-none d-md-flex bg-image"></div>
+                </div>
+                </div>
+            </div>
+        )
     );
 
 }
